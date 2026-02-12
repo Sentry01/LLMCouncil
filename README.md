@@ -144,6 +144,10 @@ council: Compare LoRA, QLoRA, and full fine-tuning for a 7B model with 50K examp
 Current best practices, realistic expectations.
 ```
 
+## Inspiration
+
+Inspired by Andrej Karpathy's [llm-council](https://github.com/karpathy/llm-council) — adapted as a Copilot CLI skill/agent with the Fast Triad architecture.
+
 ## License
 
 MIT — do whatever you want with it.
