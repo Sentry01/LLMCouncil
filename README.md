@@ -1,8 +1,8 @@
 # LLM Council
 
-A skill and agent for [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/) that throws five different AI models at your problem — one writes the answer, three try to tear it apart, and the last one stitches together whatever survives.
+A skill and agent for [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/) that throws three different AI models at your problem in parallel — each tackling it independently from a different angle — then an orchestrator merges the best of all three into a single answer.
 
-I call it the **Parliamentary Siege** method. It's overkill for simple stuff, but for architecture calls, security reviews, or anything you'd regret getting wrong — it catches things no single model will.
+I call it the **Fast Triad** method. Three models, three perspectives, one final answer. Fast enough for daily use, thorough enough for decisions you'd regret getting wrong.
 
 ## What's this for?
 
@@ -12,23 +12,22 @@ It gives you two things:
 - A **skill** that triggers inside any Copilot CLI session (just type `council: your question`)
 - A **standalone agent** you can run directly (`copilot --agent LLMCouncil`)
 
-## Why bother with 5 models?
+## Why three models?
 
 Ask one model a question and you get one perspective. It'll sound confident even when it's wrong. It won't question its own assumptions. It definitely won't try to break its own argument.
 
-Different models have different blind spots. Claude is good at nuance but might overcomplicate things. GPT might miss edge cases Claude catches. Gemini has strong grounding but different reasoning patterns. By giving each a specific adversarial role, you get something closer to how real decisions get made — through argument, not consensus.
+Different models have different blind spots. Claude is good at nuance but might overcomplicate things. GPT might miss edge cases Claude catches. Gemini has strong grounding but different reasoning patterns. By giving each a dual role and running them all in parallel, you get diverse perspectives fast — without the overhead of sequential rounds.
 
-Think of it like a courtroom. You wouldn't trust a trial where one person plays judge, prosecutor, defense, and witness. Same idea here.
+The key insight: each agent does double duty. Alpha drafts AND red-teams itself. Beta validates AND fact-checks. Gamma optimizes AND plays devil's advocate. Then the orchestrator cherry-picks the best from each.
 
-### The five roles
+### The roles
 
-| # | Codename | Job | Default Model |
-|---|----------|-----|---------------|
-| 1 | **Alpha** | Write the initial response. Be thorough. | `claude-opus-4.6` |
-| 2 | **Beta** | Red team. Break the logic, find holes, argue against it. | `gpt-5.2` |
-| 3 | **Gamma** | Fact-check. Verify every claim. Use search if needed. | `gemini-3-pro-preview` |
-| 4 | **Delta** | Optimize. Is it clear? Well-structured? Actually usable? | `claude-sonnet-4` |
-| 5 | **Epsilon** | Synthesize. Take the draft, the attacks, and produce the final answer. | `claude-opus-4.6` |
+| # | Codename | Job | Default Model | Fallback |
+|---|----------|-----|---------------|----------|
+| 1 | **Alpha** | Draft a thorough response + self-critique it | `claude-opus-4.6` | `gpt-5.2` |
+| 2 | **Beta** | Independent fact-check + validation | `gpt-5.2` | `gemini-3-pro-preview` |
+| 3 | **Gamma** | Optimize for clarity + play devil's advocate | `gemini-3-pro-preview` | `claude-opus-4.6` |
+| 4 | **Orchestrator** | Merge all three into the final answer | `claude-opus-4.6` | `gpt-5.2` |
 
 You can swap any of these models — edit the files to match what you have access to.
 
@@ -36,23 +35,19 @@ You can swap any of these models — edit the files to match what you have acces
 
 ```mermaid
 flowchart TD
-    A["Alpha writes draft"] --> B["Beta + Gamma + Delta attack it in parallel"]
-    B --> C{"Epsilon: any critical flaws?"}
-    C -->|"Yes"| D["Alpha revises"]
-    D --> B
-    C -->|"No"| E["Final answer delivered"]
+    A["Alpha drafts + self-critiques"] & B["Beta fact-checks + validates"] & C["Gamma optimizes + challenges"] --> D["Orchestrator merges the best"]
+    D --> E["Final answer delivered"]
 
     style A fill:#4a90d9,color:#fff
     style B fill:#e74c3c,color:#fff
     style C fill:#f39c12,color:#fff
-    style D fill:#95a5a6,color:#fff
+    style D fill:#9b59b6,color:#fff
     style E fill:#2ecc71,color:#fff
 ```
 
-1. **Draft** — Alpha writes a comprehensive first answer
-2. **Siege** — Beta, Gamma, and Delta run in parallel, each attacking from their angle. They rate issues as CRITICAL, IMPORTANT, or MINOR
-3. **Synthesize** — Epsilon reads everything. If there are critical flaws, Alpha revises and we go again (max 2 rounds). Otherwise, Epsilon merges the valid feedback into a final answer
-4. **Ratify** — You get the result. By default you only see the final output. Add `verbose` to watch the whole debate
+1. **Parallel Triad** — Alpha, Beta, and Gamma all run simultaneously, each tackling the problem independently from their angle. Each does double duty (draft + critique)
+2. **Orchestrate** — The orchestrator reads all three outputs, identifies consensus, resolves conflicts, and merges the strongest elements into a final answer. Unresolvable conflicts get flagged as caveats
+3. **Ratify** — You get the result. By default you only see the final output. Add `verbose` to watch all three perspectives
 
 ## Prerequisites
 
@@ -100,12 +95,11 @@ By default you only get the final answer. If you want to see what each agent sai
 verbose council: What caching strategy for a real-time dashboard?
 ```
 
-This shows the full back-and-forth:
-- 📝 Alpha's draft
-- ⚔️ Beta's attack
-- ✅ Gamma's fact-check
-- 🔧 Delta's critique
-- 🏛️ Final ratified answer
+This shows all perspectives:
+- 📝 Alpha (Draft + Self-Critique)
+- ✅ Beta (Fact-Check + Validation)
+- 🔧 Gamma (Optimized + Devil's Advocate)
+- 🏛️ Orchestrated Verdict
 
 ## When to use it
 
@@ -118,18 +112,18 @@ This shows the full back-and-forth:
 **Not worth it:**
 - Quick fixes, file lookups, simple questions
 - Anything where speed matters more than correctness
-- Your model budget is tight (this uses 5+ calls per question)
+- Your model budget is tight (this uses 4 calls per question)
 
 ## Adapting to domains
 
 The agents shift focus depending on what you're asking about:
 
-| Domain | Beta looks for | Gamma checks | Delta critiques |
-|--------|---------------|--------------|-----------------|
-| Code | Security holes, race conditions | API accuracy, version numbers | Performance, readability |
-| Architecture | Failure modes, scaling limits | Tech claims, benchmarks | Completeness, clarity |
-| Research | Bias, bad methodology | Sources, citations | Whether it's actionable |
-| Writing | Logic gaps, tone issues | Factual claims | Flow, brevity |
+| Domain | Alpha focuses on | Beta focuses on | Gamma focuses on |
+|--------|-----------------|-----------------|------------------|
+| Code | Implementation + security self-review | API accuracy, versions, edge cases | Performance, readability, alternatives |
+| Architecture | System design + failure modes | Tech claims, benchmarks, scalability | Simplicity, clarity, alternatives |
+| Research | Comprehensive analysis + bias check | Source verification, citations | Actionability, counter-arguments |
+| Writing | Content + tone self-critique | Factual accuracy, consistency | Flow, conciseness, formatting |
 
 ## Example prompts
 

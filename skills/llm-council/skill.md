@@ -1,13 +1,13 @@
 ---
 name: llm-council
-description: "Use when a task needs stress-testing from multiple cognitive angles, cross-validation, or when the user mentions council, parliamentary siege, swarm, or multi-agent review. Dispatches 5 specialized subagents to draft, attack, and synthesize a robust response."
+description: "Use when a task needs stress-testing from multiple cognitive angles, cross-validation, or when the user mentions council, parliamentary siege, swarm, or multi-agent review. Dispatches 3 specialized subagents in parallel plus an orchestrator for fast, robust results."
 ---
 
-# LLM Council — Parliamentary Siege
+# LLM Council — Fast Triad
 
-Dispatch 5 subagents with distinct cognitive roles to stress-test any task. One drafts, three attack, one synthesizes.
+Dispatch 3 subagents in parallel with distinct cognitive roles, then orchestrate a final synthesis. Optimized for speed without sacrificing rigor.
 
-**Core principle:** A single perspective has blind spots. Five adversarial perspectives produce robust outputs.
+**Core principle:** Three diverse perspectives from different model families catch blind spots fast. An orchestrator merges them into a polished result.
 
 ## When to Use
 
@@ -23,206 +23,162 @@ Dispatch 5 subagents with distinct cognitive roles to stress-test any task. One 
 - **Default:** Hide internal debate, show only final ratified output
 - **Verbose mode:** User says "verbose council" or "show debate" → show each agent's output
 
-## The Five Roles
+## The Four Roles
 
-| Role | Agent | Focus | Default Model |
-|------|-------|-------|---------------|
-| **Alpha** | Generator | Depth, nuance, comprehensive first draft | claude-opus-4.6 |
-| **Beta** | Red Teamer | Break logic, find vulnerabilities, counter-arguments | gpt-5.2 |
-| **Gamma** | Fact-Checker | Grounding, accuracy, real-world validity | gemini-3-pro-preview |
-| **Delta** | Optimizer | Efficiency, structure, clarity, UX | claude-sonnet-4 |
-| **Epsilon** | Synthesizer | Merge all feedback into final ratified output | claude-opus-4.6 |
+| Role | Agent | Focus | Default Model | Fallback |
+|------|-------|-------|---------------|----------|
+| **Alpha** | Drafter & Red Teamer | Comprehensive draft + self-critique of weaknesses | claude-opus-4.6 | gpt-5.2 |
+| **Beta** | Fact-Checker & Validator | Accuracy, grounding, real-world validity, edge cases | gpt-5.2 | gemini-3-pro-preview |
+| **Gamma** | Optimizer & Devil's Advocate | Structure, efficiency, counter-arguments, alternatives | gemini-3-pro-preview | claude-opus-4.6 |
+| **Orchestrator** | Synthesizer | Merge all outputs into final ratified response | claude-opus-4.6 | gpt-5.2 |
 
-Models are recommended defaults — adapt based on task domain and availability.
+Each subagent uses a **different model family** to maximize cognitive diversity. If a model is unavailable, fall back to the next in the chain.
 
 ## The Protocol
 
 ```
-Phase 1: DRAFT
-  Alpha generates comprehensive response to the task
+Phase 1: PARALLEL TRIAD (all 3 subagents run simultaneously)
+  Alpha drafts comprehensive response + flags own uncertainties
+  Beta fact-checks the task requirements, verifies assumptions, identifies edge cases
+  Gamma proposes alternative approaches, critiques structure, optimizes for clarity
 
-Phase 2: SIEGE (parallel)
-  Beta attacks logic, security, edge cases
-  Gamma verifies claims, checks accuracy
-  Delta critiques structure, efficiency, clarity
+Phase 2: ORCHESTRATE
+  Orchestrator reads all 3 outputs
+  Merges the best elements, resolves conflicts, produces final output
+  If CRITICAL conflicts exist → flag them with caveats (no revision loop for speed)
 
-Phase 3: SYNTHESIZE
-  Epsilon reads draft + all critiques
-  If MAJOR disagreements found → Alpha revises, re-enter Phase 2
-  If minor or no disagreements → produce final output
-
-Phase 4: RATIFY
+Phase 3: RATIFY
   Present final output to user
 ```
 
 ## Implementation
 
-### Phase 1 — Draft (Alpha)
+### Phase 1 — Parallel Triad (Alpha, Beta, Gamma simultaneously)
 
-Dispatch a `general-purpose` subagent with model override:
+Dispatch all three subagents **at the same time** using parallel tool calls:
 
+**Alpha (Drafter & Red Teamer):**
 ```
 task(
   agent_type: "general-purpose",
   model: "claude-opus-4.6",
-  prompt: "You are Alpha, the Primary Generator on an LLM Council.
-Your role: Create a comprehensive, nuanced response to this task.
-Be thorough — your draft will be attacked by three adversarial reviewers.
+  prompt: "You are Alpha on an LLM Council (Fast Triad mode).
+Your dual role: Create a comprehensive response AND red-team your own work.
 
 TASK: {user_task}
 
-Provide your complete draft response."
+Instructions:
+1. Write a thorough, nuanced response to the task
+2. Then add a section '## Self-Critique' where you:
+   - Flag any assumptions you made
+   - Identify weaknesses or edge cases in your response
+   - Note areas where you're uncertain
+   - List potential counter-arguments
+
+Be thorough in both the draft AND the self-critique."
 )
 ```
 
-### Phase 2 — Siege (Beta, Gamma, Delta in parallel)
-
-Dispatch three subagents **simultaneously**:
-
-**Beta (Red Teamer):**
+**Beta (Fact-Checker & Validator):**
 ```
 task(
   agent_type: "general-purpose",
   model: "gpt-5.2",
-  prompt: "You are Beta, the Red Teamer on an LLM Council.
-Your job: ATTACK this draft. Find every flaw.
+  prompt: "You are Beta on an LLM Council (Fast Triad mode).
+Your role: Independent fact-checking and validation of the task requirements.
 
-Focus on:
-- Logical fallacies or unsupported claims
-- Security vulnerabilities or safety issues
-- Edge cases not considered
-- Counter-arguments the draft ignores
-- Assumptions that could be wrong
+TASK: {user_task}
 
-Be adversarial. If you can't find real flaws, say so — don't invent problems.
+Instructions:
+1. Analyze the task independently — produce your OWN solution/response
+2. Focus especially on:
+   - Factual accuracy of any claims or technical details
+   - Edge cases and boundary conditions
+   - Security or safety considerations
+   - Real-world validity and practicality
+   - Version numbers, API correctness, tool names
+3. Use web_search to verify claims when possible
+4. Flag anything with severity: CRITICAL / IMPORTANT / MINOR
 
-DRAFT TO ATTACK:
-{alpha_draft}
-
-ORIGINAL TASK:
-{user_task}
-
-Output: List each flaw with severity (CRITICAL / IMPORTANT / MINOR) and explanation."
+Output your independent response followed by a '## Validation Notes' section."
 )
 ```
 
-**Gamma (Fact-Checker):**
+**Gamma (Optimizer & Devil's Advocate):**
 ```
 task(
   agent_type: "general-purpose",
   model: "gemini-3-pro-preview",
-  prompt: "You are Gamma, the Fact-Checker on an LLM Council.
-Your job: VERIFY every factual claim in this draft.
+  prompt: "You are Gamma on an LLM Council (Fast Triad mode).
+Your role: Propose the most elegant, efficient solution AND play devil's advocate.
 
-Focus on:
-- Are technical claims accurate?
-- Are recommendations grounded in real-world practice?
-- Are there citations or evidence for key claims?
-- Does anything contradict known best practices?
-- Are version numbers, API references, or tool names correct?
+TASK: {user_task}
 
-Use web_search to verify claims when possible.
+Instructions:
+1. Produce your OWN response optimized for:
+   - Clarity and scannability
+   - Minimal complexity (simplest viable approach)
+   - Actionability (user can execute immediately)
+   - Proper formatting (tables, lists, code blocks as appropriate)
+2. Then add a '## Devil's Advocate' section where you:
+   - Argue against the obvious approach
+   - Propose at least one alternative solution
+   - Identify what could go wrong
+   - Question unstated assumptions
 
-DRAFT TO VERIFY:
-{alpha_draft}
-
-ORIGINAL TASK:
-{user_task}
-
-Output: List each claim checked with verdict (VERIFIED / UNVERIFIED / INCORRECT) and evidence."
+Be concise but thorough."
 )
 ```
 
-**Delta (Optimizer):**
-```
-task(
-  agent_type: "general-purpose",
-  model: "claude-sonnet-4",
-  prompt: "You are Delta, the Optimizer on an LLM Council.
-Your job: CRITIQUE the structure, efficiency, and usability of this draft.
+### Phase 2 — Orchestrate
 
-Focus on:
-- Is the response well-organized and scannable?
-- Is there unnecessary verbosity or repetition?
-- Could the format be improved (tables, lists, code blocks)?
-- Is the response actionable and practical?
-- Does it match the user's likely experience level?
-- Is anything missing that the user would need?
-
-DRAFT TO CRITIQUE:
-{alpha_draft}
-
-ORIGINAL TASK:
-{user_task}
-
-Output: List each issue with severity (CRITICAL / IMPORTANT / MINOR) and suggested improvement."
-)
-```
-
-### Phase 3 — Synthesize (Epsilon)
-
-After all three siege agents return:
+After all three subagents return, the **main agent** (you) acts as Orchestrator:
 
 ```
 task(
   agent_type: "general-purpose",
   model: "claude-opus-4.6",
-  prompt: "You are Epsilon, the Synthesizer on an LLM Council.
-You have the original draft and three adversarial reviews.
+  prompt: "You are the Orchestrator on an LLM Council (Fast Triad mode).
+You have three independent responses to the same task from different AI models.
 
-Your job:
-1. Assess if there are MAJOR disagreements (any CRITICAL flaws found)
-2. If MAJOR: Output 'VERDICT: REVISE' and list what must change
-3. If no MAJOR issues: Produce the FINAL ratified response by:
-   - Starting from Alpha's draft
-   - Incorporating valid critique from Beta, Gamma, Delta
-   - Removing anything flagged as incorrect by Gamma
-   - Applying structural improvements from Delta
-   - Addressing security/logic issues from Beta
+Your job — produce a SINGLE final response by:
+1. Identifying consensus across the three responses
+2. Resolving conflicts by picking the best-supported position
+3. Incorporating the strongest elements from each:
+   - Alpha's depth and self-identified uncertainties
+   - Beta's fact-checked details and validation
+   - Gamma's structural clarity and alternative perspectives
+4. If any CRITICAL conflicts remain unresolved, note them as caveats
+5. Produce a clean, polished final output — not a meta-commentary
 
 ORIGINAL TASK:
 {user_task}
 
-ALPHA DRAFT:
-{alpha_draft}
+ALPHA (Drafter & Red Teamer) OUTPUT:
+{alpha_output}
 
-BETA (Red Team) FINDINGS:
+BETA (Fact-Checker & Validator) OUTPUT:
 {beta_output}
 
-GAMMA (Fact-Check) FINDINGS:
+GAMMA (Optimizer & Devil's Advocate) OUTPUT:
 {gamma_output}
 
-DELTA (Optimizer) FINDINGS:
-{delta_output}
-
-Output either:
-- 'VERDICT: REVISE' + revision instructions (if critical flaws)
-- 'VERDICT: RATIFIED' + the final polished response (if no critical flaws)"
+Output: The final ratified response. Do NOT include agent names or meta-discussion unless there are critical unresolved conflicts."
 )
 ```
 
-### Phase 3b — Revision Loop (if needed)
+### Phase 3 — Ratify
 
-If Epsilon says REVISE:
-1. Send revision instructions back to Alpha as a new subagent
-2. Re-run Phase 2 (Siege) on the revised draft
-3. Re-run Phase 3 (Synthesize)
-4. Maximum 2 revision rounds — after that, Epsilon must ratify with caveats
-
-### Phase 4 — Ratify
-
-- **Default mode:** Present only the ratified response to the user
-- **Verbose mode:** Show each phase's output with headers:
+- **Default mode:** Present only the orchestrated response to the user
+- **Verbose mode:** Show each agent's output with headers:
   ```
-  ## 📝 Alpha Draft
+  ## 📝 Alpha (Draft + Self-Critique)
   ...
-  ## ⚔️ Beta (Red Team)
+  ## ✅ Beta (Fact-Check + Validation)
   ...
-  ## ✅ Gamma (Fact-Check)
+  ## 🔧 Gamma (Optimized + Devil's Advocate)
   ...
-  ## 🔧 Delta (Optimizer)
-  ...
-  ## 🏛️ Ratified Verdict
+  ## 🏛️ Orchestrated Verdict
   ...
   ```
 
@@ -230,17 +186,27 @@ If Epsilon says REVISE:
 
 Adjust agent focus based on task type:
 
-| Domain | Beta Focus | Gamma Focus | Delta Focus |
-|--------|-----------|-------------|-------------|
-| **Code** | Security, edge cases, race conditions | API accuracy, version correctness | Performance, readability, patterns |
-| **Architecture** | Failure modes, scalability limits | Technology claims, benchmarks | Diagram clarity, completeness |
-| **Research** | Bias, methodology flaws | Source verification, citations | Readability, actionability |
-| **Writing** | Logical consistency, tone | Factual accuracy | Flow, conciseness, formatting |
+| Domain | Alpha Focus | Beta Focus | Gamma Focus |
+|--------|------------|-----------|-------------|
+| **Code** | Implementation + security self-review | API accuracy, version correctness, edge cases | Performance, readability, alternative patterns |
+| **Architecture** | System design + failure mode analysis | Technology claims, benchmarks, scalability | Diagram clarity, simplicity, alternatives |
+| **Research** | Comprehensive analysis + bias check | Source verification, citations, methodology | Readability, actionability, counter-arguments |
+| **Writing** | Content + tone self-critique | Factual accuracy, consistency | Flow, conciseness, formatting |
+
+## Key Differences from Full Council (5-agent)
+
+| Aspect | Fast Triad (3+1) | Full Council (5) |
+|--------|-------------------|-------------------|
+| Subagents | 3 parallel | 1 sequential + 3 parallel + 1 sequential |
+| Total phases | 2 (parallel + orchestrate) | 4 (draft → siege → synthesize → ratify) |
+| Revision loops | None (caveats instead) | Up to 2 rounds |
+| Speed | ~2x faster | More thorough |
+| Model diversity | 3 different families | 2-3 families |
 
 ## Common Mistakes
 
-- **Don't skip the siege** — The whole point is adversarial review
-- **Don't run agents sequentially** — Beta/Gamma/Delta MUST run in parallel
-- **Don't force disagreements** — If the draft is solid, say so
-- **Don't exceed 2 revision rounds** — Diminishing returns; ratify with caveats
-- **Don't use for trivial tasks** — This is expensive; use proportionally
+- **Don't run agents sequentially** — All three MUST run in parallel for speed
+- **Don't force disagreements** — If agents agree, that's a strong signal
+- **Don't add revision loops** — Speed is the point; use caveats for unresolved issues
+- **Don't use for trivial tasks** — Still has overhead; use proportionally
+- **Don't skip the orchestrator** — Raw agent outputs need merging, not concatenation
