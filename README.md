@@ -1,4 +1,4 @@
-# LLM Council
+# Agent Council
 
 A skill and agent for [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/) that throws three different AI models at your problem in parallel — then either has them **build on each other's ideas** or **debate to stress-test the answer** — before an orchestrator delivers the final result.
 
@@ -14,7 +14,7 @@ This is a **[Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli
 
 It gives you two things:
 - A **skill** that triggers inside any Copilot CLI session (just type `council: your question`)
-- A **standalone agent** you can run directly (`copilot --agent LLMCouncil`)
+- A **standalone agent** you can run directly (`copilot --agent AgentCouncil`)
 
 ## Why three models?
 
@@ -97,16 +97,16 @@ flowchart TD
 ## Install
 
 ```bash
-git clone https://github.com/Sentry01/LLMCouncil.git
-cd LLMCouncil
+git clone https://github.com/Sentry01/AgentCouncil.git
+cd AgentCouncil
 
 # Copy the skill
-mkdir -p ~/.copilot/skills/llm-council
-cp skills/llm-council/skill.md ~/.copilot/skills/llm-council/skill.md
+mkdir -p ~/.copilot/skills/agent-council
+cp skills/agent-council/skill.md ~/.copilot/skills/agent-council/skill.md
 
 # Copy the agent
 mkdir -p ~/.copilot/agents
-cp agents/LLMCouncil.agent.md ~/.copilot/agents/LLMCouncil.agent.md
+cp agents/AgentCouncil.agent.md ~/.copilot/agents/AgentCouncil.agent.md
 ```
 
 No dependencies. No build. Just markdown files that Copilot CLI reads.
@@ -143,11 +143,11 @@ debate: Redis vs Memcached for our session store — which survives at scale?
 ### As a standalone agent
 
 ```bash
-copilot --agent LLMCouncil "Brainstorm novel approaches to real-time sync"
+copilot --agent AgentCouncil "Brainstorm novel approaches to real-time sync"
 ```
 
 ```bash
-copilot --agent LLMCouncil "Stress-test this auth flow for vulnerabilities"
+copilot --agent AgentCouncil "Stress-test this auth flow for vulnerabilities"
 ```
 
 ### Seeing the internal process
@@ -246,7 +246,7 @@ debate: PostgreSQL vs DynamoDB for a multi-tenant SaaS with unpredictable query 
 
 ## Inspiration
 
-Inspired by Andrej Karpathy's [llm-council](https://github.com/karpathy/llm-council) — adapted as a Copilot CLI skill/agent with the dual-mode architecture.
+Inspired by Andrej Karpathy's [agent-council](https://github.com/karpathy/agent-council) — adapted as a Copilot CLI skill/agent with the dual-mode architecture.
 
 ## License
 

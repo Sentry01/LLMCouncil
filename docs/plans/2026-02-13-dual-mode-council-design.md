@@ -1,4 +1,4 @@
-# LLM Council — Dual Mode Design
+# Agent Council — Dual Mode Design
 
 ## Problem
 
@@ -93,7 +93,7 @@ The main agent (not a subagent) reads all 3 outputs and identifies the strongest
 Two non-leader agents receive the leading draft and attack it:
 
 ```
-"You are {Agent} on an LLM Council (Adversarial mode — Attack phase).
+"You are {Agent} on an Agent Council (Adversarial mode — Attack phase).
 
 You previously submitted your own draft. Now the Council Orchestrator has
 identified the LEADING POSITION below. Your job: tear it apart.
@@ -119,7 +119,7 @@ Be ruthless. Your job is to break this argument, not to be polite."
 ### Phase 3 — Verdict
 
 ```
-"You are the Orchestrator on an LLM Council (Adversarial mode — Verdict).
+"You are the Orchestrator on an Agent Council (Adversarial mode — Verdict).
 
 A leading position was stress-tested by two opposing agents. Your job:
 deliver the final verdict.
@@ -184,7 +184,7 @@ Prompts shift from adversarial self-critique to exploratory ideation:
 
 **Alpha:**
 ```
-"You are Alpha on an LLM Council (Collaborative mode).
+"You are Alpha on an Agent Council (Collaborative mode).
 Your role: Generate a comprehensive, creative response.
 
 TASK: {user_task}
@@ -198,7 +198,7 @@ Be expansive. This is brainstorming — breadth over polish."
 
 **Beta:**
 ```
-"You are Beta on an LLM Council (Collaborative mode).
+"You are Beta on an Agent Council (Collaborative mode).
 Your role: Ground the problem in reality while finding opportunities.
 
 TASK: {user_task}
@@ -212,7 +212,7 @@ Be constructive. Find opportunities, not just constraints."
 
 **Gamma:**
 ```
-"You are Gamma on an LLM Council (Collaborative mode).
+"You are Gamma on an Agent Council (Collaborative mode).
 Your role: Find the most elegant, minimal solution and open new angles.
 
 TASK: {user_task}
@@ -229,7 +229,7 @@ Be creative. Simplicity and novelty over comprehensiveness."
 All 3 agents receive the other two agents' drafts and write an improved version:
 
 ```
-"You are {Agent} on an LLM Council (Collaborative mode — Improve phase).
+"You are {Agent} on an Agent Council (Collaborative mode — Improve phase).
 
 You submitted an initial draft. Now you've received the other two agents'
 work. Your job: write an IMPROVED version that's better than anything
@@ -266,7 +266,7 @@ Where `{agent_strength}` is:
 ### Phase 3 — Synthesize
 
 ```
-"You are the Orchestrator on an LLM Council (Collaborative mode — Synthesis).
+"You are the Orchestrator on an Agent Council (Collaborative mode — Synthesis).
 
 Three agents brainstormed independently, then read each other's work and
 each submitted an improved version. You have incredibly rich raw material.

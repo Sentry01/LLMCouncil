@@ -1,9 +1,9 @@
 ---
-name: llm-council
+name: agent-council
 description: "Use when a task needs multi-model perspectives, brainstorming, or stress-testing. Supports two modes: collaborative (default — agents build on each other's ideas) and adversarial (agents debate to find the strongest answer). Triggers: council, siege, swarm, multi-agent, debate, brainstorm."
 ---
 
-# LLM Council — Dual Mode
+# Agent Council — Dual Mode
 
 Dispatch 3 subagents in parallel with distinct cognitive roles, then orchestrate a final output. Two modes: **collaborative** (default) for building novel solutions together, and **adversarial** for stress-testing answers through debate.
 
@@ -82,7 +82,7 @@ Dispatch all three subagents **at the same time**:
 task(
   agent_type: "general-purpose",
   model: "claude-opus-4.6",
-  prompt: "You are Alpha on an LLM Council (Collaborative mode).
+  prompt: "You are Alpha on an Agent Council (Collaborative mode).
 Your role: Generate a comprehensive, creative response.
 
 TASK: {user_task}
@@ -100,7 +100,7 @@ Be expansive. This is brainstorming — breadth over polish."
 task(
   agent_type: "general-purpose",
   model: "gpt-5.2",
-  prompt: "You are Beta on an LLM Council (Collaborative mode).
+  prompt: "You are Beta on an Agent Council (Collaborative mode).
 Your role: Ground the problem in reality while finding opportunities.
 
 TASK: {user_task}
@@ -118,7 +118,7 @@ Be constructive. Find opportunities, not just constraints."
 task(
   agent_type: "general-purpose",
   model: "gemini-3-pro-preview",
-  prompt: "You are Gamma on an LLM Council (Collaborative mode).
+  prompt: "You are Gamma on an Agent Council (Collaborative mode).
 Your role: Find the most elegant, minimal solution and open new angles.
 
 TASK: {user_task}
@@ -139,7 +139,7 @@ After all three return, dispatch all three again **at the same time**, each rece
 task(
   agent_type: "general-purpose",
   model: "{same_model_as_phase_1}",
-  prompt: "You are {Agent} on an LLM Council (Collaborative mode — Improve phase).
+  prompt: "You are {Agent} on an Agent Council (Collaborative mode — Improve phase).
 
 You submitted an initial draft. Now you've received the other two agents'
 work. Your job: write an IMPROVED version that's better than anything
@@ -180,7 +180,7 @@ Where `{agent_strength}` is:
 task(
   agent_type: "general-purpose",
   model: "claude-opus-4.6",
-  prompt: "You are the Orchestrator on an LLM Council (Collaborative mode — Synthesis).
+  prompt: "You are the Orchestrator on an Agent Council (Collaborative mode — Synthesis).
 
 Three agents brainstormed independently, then read each other's work and
 each submitted an improved version. You have incredibly rich raw material.
@@ -244,7 +244,7 @@ Dispatch all three subagents **at the same time**:
 task(
   agent_type: "general-purpose",
   model: "claude-opus-4.6",
-  prompt: "You are Alpha on an LLM Council (Adversarial mode).
+  prompt: "You are Alpha on an Agent Council (Adversarial mode).
 Your dual role: Create a comprehensive response AND red-team your own work.
 
 TASK: {user_task}
@@ -266,7 +266,7 @@ Be thorough in both the draft AND the self-critique."
 task(
   agent_type: "general-purpose",
   model: "gpt-5.2",
-  prompt: "You are Beta on an LLM Council (Adversarial mode).
+  prompt: "You are Beta on an Agent Council (Adversarial mode).
 Your role: Independent fact-checking and validation of the task requirements.
 
 TASK: {user_task}
@@ -291,7 +291,7 @@ Output your independent response followed by a '## Validation Notes' section."
 task(
   agent_type: "general-purpose",
   model: "gemini-3-pro-preview",
-  prompt: "You are Gamma on an LLM Council (Adversarial mode).
+  prompt: "You are Gamma on an Agent Council (Adversarial mode).
 Your role: Propose the most elegant, efficient solution AND play devil's advocate.
 
 TASK: {user_task}
@@ -326,7 +326,7 @@ Dispatch the two **non-leader** agents simultaneously:
 task(
   agent_type: "general-purpose",
   model: "{same_model_as_phase_1}",
-  prompt: "You are {Agent} on an LLM Council (Adversarial mode — Attack phase).
+  prompt: "You are {Agent} on an Agent Council (Adversarial mode — Attack phase).
 
 You previously submitted your own draft. Now the Council Orchestrator has
 identified the LEADING POSITION below. Your job: tear it apart.
@@ -356,7 +356,7 @@ Be ruthless. Your job is to break this argument, not to be polite."
 task(
   agent_type: "general-purpose",
   model: "claude-opus-4.6",
-  prompt: "You are the Orchestrator on an LLM Council (Adversarial mode — Verdict).
+  prompt: "You are the Orchestrator on an Agent Council (Adversarial mode — Verdict).
 
 A leading position was stress-tested by two opposing agents. Your job:
 deliver the final verdict.
