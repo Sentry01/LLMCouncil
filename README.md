@@ -68,17 +68,18 @@ flowchart TD
 ```mermaid
 flowchart TD
     A1["📝 Alpha drafts + self-critiques"] & B1["✅ Beta fact-checks"] & C1["🔧 Gamma optimizes + challenges"]
-    A1 & B1 & C1 --> T["🎯 Orchestrator picks leading position"]
-    T --> ATK1["⚔️ Agent attacks leader"] & ATK2["⚔️ Agent attacks leader"]
-    ATK1 & ATK2 --> V["🏛️ Orchestrator delivers verdict"]
-    V --> E["Final answer: SURVIVED / MODIFIED / OVERTURNED"]
+    A1 & B1 & C1 --> T{"🎯 Orchestrator picks leader"}
+    T -- "e.g. Alpha leads" --> ATK_B["⚔️ Beta attacks Alpha's position"]
+    T -- "e.g. Alpha leads" --> ATK_C["⚔️ Gamma attacks Alpha's position"]
+    ATK_B & ATK_C --> V["🏛️ Orchestrator delivers verdict"]
+    V --> E["SURVIVED ✅ / MODIFIED 🔄 / OVERTURNED ❌"]
 
     style A1 fill:#4a90d9,color:#fff
     style B1 fill:#e74c3c,color:#fff
     style C1 fill:#f39c12,color:#fff
     style T fill:#9b59b6,color:#fff
-    style ATK1 fill:#c0392b,color:#fff
-    style ATK2 fill:#c0392b,color:#fff
+    style ATK_B fill:#c0392b,color:#fff
+    style ATK_C fill:#c0392b,color:#fff
     style V fill:#9b59b6,color:#fff
     style E fill:#2ecc71,color:#fff
 ```
