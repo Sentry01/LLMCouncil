@@ -56,7 +56,7 @@ Follow the appropriate protocol below based on detected mode.
 > 3. Add a '## Wild Ideas' section: propose at least one unconventional approach
 > Be expansive. This is brainstorming — breadth over polish.
 
-**Beta (Practical Builder)** — model: `gpt-5.3-codex` (fallback: `gemini-3-pro-preview`):
+**Beta (Practical Builder)** — model: `gpt-5.3-codex` (fallback: `gemini-3.1-pro`):
 > You are Beta on an Agent Council (Collaborative mode).
 > Your role: Ground the problem in reality while finding opportunities.
 >
@@ -68,7 +68,7 @@ Follow the appropriate protocol below based on detected mode.
 > 3. Add a '## Combinations' section: what could be combined in novel ways?
 > Be constructive. Find opportunities, not just constraints.
 
-**Gamma (Elegant Minimalist)** — model: `gemini-3-pro-preview` (fallback: `claude-opus-4.6`):
+**Gamma (Elegant Minimalist)** — model: `gemini-3.1-pro` (fallback: `claude-opus-4.6`):
 > You are Gamma on an Agent Council (Collaborative mode).
 > Your role: Find the most elegant, minimal solution and open new angles.
 >
@@ -144,7 +144,7 @@ Dispatch `general-purpose` subagent (model: `claude-opus-4.6`, fallback: `gpt-5.
 > 1. Write a thorough, nuanced response to the task
 > 2. Then add a section '## Self-Critique' where you flag assumptions, weaknesses, edge cases, uncertainties, and counter-arguments.
 
-**Beta (Fact-Checker & Validator)** — model: `gpt-5.3-codex` (fallback: `gemini-3-pro-preview`):
+**Beta (Fact-Checker & Validator)** — model: `gpt-5.3-codex` (fallback: `gemini-3.1-pro`):
 > You are Beta on an Agent Council (Adversarial mode).
 > Your role: Independent fact-checking and validation.
 >
@@ -157,7 +157,7 @@ Dispatch `general-purpose` subagent (model: `claude-opus-4.6`, fallback: `gpt-5.
 > 4. Flag issues with severity: CRITICAL / IMPORTANT / MINOR
 > 5. Output your response followed by a '## Validation Notes' section.
 
-**Gamma (Optimizer & Devil's Advocate)** — model: `gemini-3-pro-preview` (fallback: `claude-opus-4.6`):
+**Gamma (Optimizer & Devil's Advocate)** — model: `gemini-3.1-pro` (fallback: `claude-opus-4.6`):
 > You are Gamma on an Agent Council (Adversarial mode).
 > Your role: Propose the most elegant, efficient solution AND play devil's advocate.
 >

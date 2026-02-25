@@ -46,8 +46,8 @@ If no trigger matches, default to **collaborative**.
 | Role | Agent | Default Model | Fallback |
 |------|-------|---------------|----------|
 | **Alpha** | Deep Explorer / Drafter | claude-opus-4.6 | gpt-5.3-codex |
-| **Beta** | Practical Builder / Validator | gpt-5.3-codex | gemini-3-pro-preview |
-| **Gamma** | Elegant Minimalist / Devil's Advocate | gemini-3-pro-preview | claude-opus-4.6 |
+| **Beta** | Practical Builder / Validator | gpt-5.3-codex | gemini-3.1-pro |
+| **Gamma** | Elegant Minimalist / Devil's Advocate | gemini-3.1-pro | claude-opus-4.6 |
 | **Orchestrator** | Synthesizer / Judge | claude-opus-4.6 | gpt-5.3-codex |
 
 Each subagent uses a **different model family** to maximize cognitive diversity.
@@ -117,7 +117,7 @@ Be constructive. Find opportunities, not just constraints."
 ```
 task(
   agent_type: "general-purpose",
-  model: "gemini-3-pro-preview",
+  model: "gemini-3.1-pro",
   prompt: "You are Gamma on an Agent Council (Collaborative mode).
 Your role: Find the most elegant, minimal solution and open new angles.
 
@@ -290,7 +290,7 @@ Output your independent response followed by a '## Validation Notes' section."
 ```
 task(
   agent_type: "general-purpose",
-  model: "gemini-3-pro-preview",
+  model: "gemini-3.1-pro",
   prompt: "You are Gamma on an Agent Council (Adversarial mode).
 Your role: Propose the most elegant, efficient solution AND play devil's advocate.
 
