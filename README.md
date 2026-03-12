@@ -30,10 +30,10 @@ The key insight: **the mode determines how they interact.**
 
 | # | Codename | Collaborative Role | Adversarial Role | Default Model | Fallback |
 |---|----------|--------------------|------------------|---------------|----------|
-| 1 | **Alpha** | Deep Explorer | Drafter & Red Teamer | `claude-opus-4.6` | `gpt-5.3-codex` |
-| 2 | **Beta** | Practical Builder | Fact-Checker & Validator | `gpt-5.3-codex` | `gemini-3.1-pro` |
+| 1 | **Alpha** | Deep Explorer | Drafter & Red Teamer | `claude-opus-4.6` | `gpt-5.4` |
+| 2 | **Beta** | Practical Builder | Fact-Checker & Validator | `gpt-5.4` | `gemini-3.1-pro` |
 | 3 | **Gamma** | Elegant Minimalist | Optimizer & Devil's Advocate | `gemini-3.1-pro` | `claude-opus-4.6` |
-| 4 | **Orchestrator** | Author (writes final synthesis) | Judge (delivers verdict) | `claude-opus-4.6` | `gpt-5.3-codex` |
+| 4 | **Orchestrator** | Author (writes final synthesis) | Judge (delivers verdict) | `claude-opus-4.6` | `gpt-5.4` |
 
 You can swap any of these models — edit the files to match what you have access to.
 

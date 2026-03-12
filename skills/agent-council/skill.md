@@ -45,10 +45,10 @@ If no trigger matches, default to **collaborative**.
 
 | Role | Agent | Default Model | Fallback |
 |------|-------|---------------|----------|
-| **Alpha** | Deep Explorer / Drafter | claude-opus-4.6 | gpt-5.3-codex |
-| **Beta** | Practical Builder / Validator | gpt-5.3-codex | gemini-3.1-pro |
+| **Alpha** | Deep Explorer / Drafter | claude-opus-4.6 | gpt-5.4 |
+| **Beta** | Practical Builder / Validator | gpt-5.4 | gemini-3.1-pro |
 | **Gamma** | Elegant Minimalist / Devil's Advocate | gemini-3.1-pro | claude-opus-4.6 |
-| **Orchestrator** | Synthesizer / Judge | claude-opus-4.6 | gpt-5.3-codex |
+| **Orchestrator** | Synthesizer / Judge | claude-opus-4.6 | gpt-5.4 |
 
 Each subagent uses a **different model family** to maximize cognitive diversity.
 
@@ -99,7 +99,7 @@ Be expansive. This is brainstorming — breadth over polish."
 ```
 task(
   agent_type: "general-purpose",
-  model: "gpt-5.3-codex",
+  model: "gpt-5.4",
   prompt: "You are Beta on an Agent Council (Collaborative mode).
 Your role: Ground the problem in reality while finding opportunities.
 
@@ -265,7 +265,7 @@ Be thorough in both the draft AND the self-critique."
 ```
 task(
   agent_type: "general-purpose",
-  model: "gpt-5.3-codex",
+  model: "gpt-5.4",
   prompt: "You are Beta on an Agent Council (Adversarial mode).
 Your role: Independent fact-checking and validation of the task requirements.
 
